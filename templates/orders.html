@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Orders
+{% endblock %}
+
+{% block main %}
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Address</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+            <tr>
+                <th scope="row">{{ order[0] }}</th>
+                <td>{% for cus in customers %}
+                    {% if cus[0] == order[1] %}{{ cus[1] }} {{ cus[2] }}{% endif %}
+                {% endfor %}
+                </td>
+                <td style="display: none">{{ order[1] }}</td>
+                <td>{{ order[2] }}</td>
+                <td>
+                    <button class="btn btn-primary edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit
+                    </button>
+                    <form action="/orders" method="post">
+                        <input type="hidden" name="id" value="{{ order[0] }}">
+                        <input type="hidden" name="todo" value="delete">
+                        <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Row</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editForm" action="/orders" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="todo" value="edit">
+                        <input type="hidden" name="id" id="edit-id">
+                        <div class="form-group">
+                            <label for="edit-address">Address</label>
+                            <input type="text" name="address" class="form-control" id="edit-address" required>
+                            <div class="invalid-feedback">
+                                Please provide an address
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="customer">Customer</label>
+                            <select name="customer" class="form-select form-select-m" id="edit-customer" aria-label=".form-select-sm" form="editForm">
+                                {% for cus in customers %}
+                                    <option value="{{ cus[0] }}">{{ cus[1] }} {{ cus[2] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Row</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="addForm" action="/orders" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="todo" value="add">
+                        <input type="hidden" name="id" id="add-id">
+
+                        <div class="form-group">
+                            <label for="customer">Customer</label>
+                            <select name="customer" class="form-select form-select-m" aria-label=".form-select-sm example" form="addForm">
+                                {% for cus in customers %}
+                                    <option value="{{ cus[0] }}">{{ cus[1] }} {{ cus[2] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    <div class="form-group">
+                            <label for="add-address">Address</label>
+                            <input type="text" name="address" class="form-control" id="add-address" required>
+                            <div class="invalid-feedback">
+                                Please provide an address
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add row</button>
+{% endblock %}
+
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const editForm = document.getElementById('editForm');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const row = this.closest('tr');
+                    const id = row.children[0].innerText;
+
+                    const address = row.children[3].innerText;
+                    const customer = row.children[2].innerText;
+
+                    document.getElementById('edit-id').value = id;
+                    document.getElementById('edit-address').value = address;
+                    document.getElementById('edit-customer').value = customer;
+                });
+            });
+
+
+        });
+    </script>
+{% endblock %}

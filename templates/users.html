@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}Users
+{% endblock %}
+
+{% block main %}
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Email</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <th scope="row">{{ user[0] }}</th>
+                <td>{{ user[1] }}</td>
+                <td>{{ user[2] }}</td>
+                <td>{{ user[3] }}</td>
+                <td>
+                    <button class="btn btn-primary edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                    <form action="/users" method="post">
+                        <input type="hidden" name="id" value="{{ user[0] }}">
+                        <input type="hidden" name="todo" value="delete">
+                    <button type="submit" class="btn btn-danger delete-btn mt-1">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Row</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editForm" action="/users" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="todo" value="edit">
+                        <input type="hidden" name="id" id="edit-id">
+                        <div class="form-group">
+                            <label for="edit-firstname">First Name</label>
+                            <input type="text" name="firstname" class="form-control" id="edit-firstname" required>
+                            <div class="invalid-feedback">
+                                Please provide a first name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-lastname">Last Name</label>
+                            <input type="text" name="lastname" class="form-control" id="edit-lastname" required>
+                            <div class="invalid-feedback">
+                                Please provide a last name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-email">Email</label>
+                            <input type="email" name="email" class="form-control" id="edit-email" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Row</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="addForm" action="/users" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="todo" value="add">
+                        <input type="hidden" name="id" id="add-id">
+                        <div class="form-group">
+                            <label for="add-firstname">First Name</label>
+                            <input type="text" name="firstname" class="form-control" id="add-firstname" required>
+                            <div class="invalid-feedback">
+                                Please provide a first name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-lastname">Last Name</label>
+                            <input type="text" name="lastname" class="form-control" id="add-lastname" required>
+                            <div class="invalid-feedback">
+                                Please provide a last name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-email">Email</label>
+                            <input type="email" name="email" class="form-control" id="add-email" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add row</button>
+{% endblock %}
+
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const editForm = document.getElementById('editForm');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const row = this.closest('tr');
+                    const id = row.children[0].innerText;
+                    const firstName = row.children[1].innerText;
+                    const lastName = row.children[2].innerText;
+                    const email = row.children[3].innerText;
+
+                    document.getElementById('edit-id').value = id;
+                    document.getElementById('edit-firstname').value = firstName;
+                    document.getElementById('edit-lastname').value = lastName;
+                    document.getElementById('edit-email').value = email;
+                });
+            });
+
+
+        });
+    </script>
+{% endblock %}

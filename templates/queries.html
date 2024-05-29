@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}Queries
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-4">
+
+
+            <form id="form1" class="ajax-form">
+                <input type="hidden" name="todo" value="1">
+                <div class="form-group">
+                    <label for="input1">Count order items by userId</label>
+                    <input type="number" class="form-control" id="input1" name="userid" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <!-- Form 2 -->
+            <form id="form2" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="2">
+                <div class="form-group">
+                    <label for="input2">Get orders addresses by email</label>
+                    <input type="email" class="form-control" id="input2" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <!-- Form 3 -->
+            <form id="form3" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="3">
+                <div class="form-group">
+                    <label for="input3">Get products from supplier contact email</label>
+                    <input type="text" class="form-control" id="input3" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <!-- Form 4 -->
+            <form id="form4" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="4">
+                <div class="form-group">
+                    <label for="input4">Get contact email by product id</label>
+                    <input type="text" class="form-control" id="input4" name="productid" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <!-- Form 5 -->
+            <form id="form5" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="5">
+                <div class="form-group">
+                    <label for="input5">Get order addresses for product id</label>
+                    <input type="text" class="form-control" id="input5" name="productid" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="resultModalLabel">Result</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Result content will be inserted here -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-4">
+            <form id="form6" class="ajax-form">
+                <label>Get all products that user with email1 ordered from supplier with email2</label>
+                <input type="hidden" name="todo" value="6">
+                <div class="form-group">
+                    <label for="input6">User email (email1)</label>
+                    <input type="email" class="form-control" id="input6" name="uemail" required>
+                </div>
+                <div class="form-group">
+                    <label for="input61">User email (email2)</label>
+                    <input type="email" class="form-control" id="input61" name="semail" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+
+
+            </form>
+            <form id="form7" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="7">
+                <div class="form-group">
+                    <label for="input7">Get last names of users that bought the same product as user with Id</label>
+                    <input type="number" class="form-control" placeholder="user id" id="input7" name="sid" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <form id="form8" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="8">
+                <div class="form-group">
+                    <label for="input8">Get all suppliers that have at least 1 product with price higher than product with given id</label>
+                    <input type="number" class="form-control" placeholder="product id" id="input8" name="prodid" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+            <form id="form9" class="ajax-form mt-4">
+                <input type="hidden" name="todo" value="9">
+                <div class="form-group">
+                    <label for="input9">Get all order addresses whose order items have a quantity higher than a specific order item with a provided id</label>
+                    <input type="number" class="form-control" placeholder="orderitem id" id="input9" name="orderitemid" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.ajax-form').on('submit', function (event) {
+                event.preventDefault(); // Prevent the form from submitting via the browser
+
+                var form = $(this);
+                var url = '/ajax'; // Replace with your endpoint
+                var formData = form.serialize();
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        console.log(response)
+                        // Show the result in the modal
+                        $('#resultModal .modal-body').html(response);
+                        $('#resultModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle the error
+                        var errorMessage = xhr.status + ': ' + xhr.statusText;
+                        $('#resultModal .modal-body').html('Error - ' + errorMessage);
+                        $('#resultModal').modal('show');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}Products
+{% endblock %}
+
+{% block main %}
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Supplier</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <th scope="row">{{ product[0] }}</th>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{% for sup in suppliers %}
+                    {% if sup[0] == product[3] %}{{ sup[1] }}{% endif %}
+                {% endfor %}
+                </td>
+                <td style="display: none">{{ product[3] }}</td>
+
+                <td>
+                    <button class="btn btn-primary edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit
+                    </button>
+                    <form action="/products" method="post">
+                        <input type="hidden" name="id" value="{{ product[0] }}">
+                        <input type="hidden" name="todo" value="delete">
+                        <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Row</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editForm" action="/products" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="todo" value="edit">
+                        <input type="hidden" name="id" id="edit-id">
+                        <div class="form-group">
+                            <label for="edit-firstname">Name</label>
+                            <input type="text" name="productname" class="form-control" id="edit-name" required>
+                            <div class="invalid-feedback">
+                                Please provide a name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-lastname">Price</label>
+                            <input type="number" step="0.01" name="price" class="form-control" id="edit-price" required>
+                            <div class="invalid-feedback">
+                                Please provide a last name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplier">Supplier</label>
+                            <select name="supplier" class="form-select form-select-m" id="edit-supplier" aria-label=".form-select-sm" form="editForm">
+                                {% for sup in suppliers %}
+                                    <option value="{{ sup[0] }}">{{ sup[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Row</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="addForm" action="/products" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="todo" value="add">
+                        <input type="hidden" name="id" id="add-id">
+                        <div class="form-group">
+                            <label for="add-name">Name</label>
+                            <input type="text" name="productname" class="form-control" id="add-name" required>
+                            <div class="invalid-feedback">
+                                Please provide a name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-lastname">Price</label>
+                            <input type="number" step="0.01" name="price" class="form-control" id="add-price" required>
+                            <div class="invalid-feedback">
+                                Please provide a last name.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplier">Supplier</label>
+                            <select name="supplier" class="form-select form-select-m" aria-label=".form-select-sm example" form="addForm">
+                                {% for sup in suppliers %}
+                                    <option value="{{ sup[0] }}">{{ sup[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add row</button>
+{% endblock %}
+
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const editForm = document.getElementById('editForm');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const row = this.closest('tr');
+                    const id = row.children[0].innerText;
+                    const name = row.children[1].innerText;
+                    const price = row.children[2].innerText;
+                    const supplier = row.children[4].innerText;
+
+                    document.getElementById('edit-id').value = id;
+                    document.getElementById('edit-name').value = name;
+                    document.getElementById('edit-price').value = price;
+                    document.getElementById('edit-supplier').value = supplier;
+                });
+            });
+
+
+        });
+    </script>
+{% endblock %}
